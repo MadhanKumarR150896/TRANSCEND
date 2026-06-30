@@ -26,7 +26,7 @@ export const useGetProjects = () => {
   });
 };
 
-const insertProject = async (newProject: string): Promise<Project> => {
+const createProject = async (newProject: string): Promise<Project> => {
   const { data, error } = await supabase
     .from("projects")
     .insert({ name: newProject })
@@ -43,7 +43,7 @@ export const useCreateProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: insertProject,
+    mutationFn: createProject,
 
     onSuccess: (createdProject) => {
       queryClient.setQueryData<Project[]>(["Projects"], (oldProjects) =>
