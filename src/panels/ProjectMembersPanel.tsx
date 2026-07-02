@@ -1,49 +1,43 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type SyntheticEvent,
-} from "react";
+import { useRef, useState, type SyntheticEvent } from "react";
 import { PanelLayout } from "../components/PanelLayout";
 import { useQuery } from "@tanstack/react-query";
 import {
   useAddProjectMember,
   useDeleteProjectMember,
-  useGetAllMembers,
+  useGetAvailableMembers,
   useGetProjectMembers,
 } from "../services/projectMembersService";
 import { useParams } from "react-router";
 import { DisplayDiv } from "../components/DisplayDiv";
 import { FormBox } from "../components/FormBox";
 import { useDebounced } from "../utils/useDebounced";
-import { createPortal } from "react-dom";
+import { DynamicDrop } from "../components/DynamicDrop";
 
 export const ProjectMembersPanel = () => {
   const { projectId } = useParams();
   const [newMember, setNewMember] = useState("");
   const [newMemberId, setNewMemberId] = useState("");
   const debouncedValue = useDebounced(newMember, 500);
-  const { data: allMembers } = useQuery(useGetAllMembers(debouncedValue));
+  const { data: availableMembers } = useQuery(
+    useGetAvailableMembers(debouncedValue, projectId)
+  );
   const { data: projectMembers, isLoading } = useQuery(
     useGetProjectMembers(projectId)
   );
   const { mutate, isPending } = useAddProjectMember(projectId!);
-  const { mutate: deletemembership } = useDeleteProjectMember(projectId!);
+  const { mutate: deletemembership, isPending: deletePending } =
+    useDeleteProjectMember(projectId!);
   const [create, setCreate] = useState(false);
   const [activeDrop, setActiveDrop] = useState<null | string>(null);
-  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
-
   const parentRef = useRef<HTMLDivElement>(null);
-  const dropRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const clearState = () => {
     setNewMember("");
     setNewMemberId("");
   };
 
-  const addMember = (e: SyntheticEvent<HTMLFormElement>) => {
+  const addMember = (e: SyntheticEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
     if (!newMemberId) return;
 
@@ -57,98 +51,43 @@ export const ProjectMembersPanel = () => {
     });
   };
 
-  const updatePosition = useCallback(() => {
-    if (!parentRef.current) return;
-    const rect = parentRef.current.getBoundingClientRect();
-    setPos({
-      top: rect.bottom + 5,
-      left: rect.left,
-      width: rect.width,
-    });
-  }, []);
-
-  useLayoutEffect(() => {
-    updatePosition();
-  }, [allMembers, updatePosition]);
-
-  useEffect(() => {
-    if (!newMember || newMemberId) return;
-
-    updatePosition();
-
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition);
-    };
-  }, [newMember, newMemberId, updatePosition]);
-
-  useEffect(() => {
-    const handleDrop = (e: MouseEvent) => {
-      if (
-        dropRef.current?.contains(e.target as Node) ||
-        parentRef.current?.contains(e.target as Node)
-      )
-        return;
-
-      setNewMemberId("a");
-    };
-    if (newMember && !newMemberId) {
-      document.addEventListener("mousedown", handleDrop);
-    }
-    return () => document.removeEventListener("mousedown", handleDrop);
-  }, [newMember, newMemberId]);
-
   return (
     <PanelLayout
       title="Project Members"
       variant="Add Member"
       isIsLoading={isLoading}
+      buttonRef={buttonRef}
       loadingMessage="Project Members are loading..."
       isCreate={create}
       isSetCreate={setCreate}
       isSetActivedrop={setActiveDrop}
       formElement={
-        <div ref={parentRef}>
+        <div className="relative flex-1" ref={parentRef}>
           <FormBox
+            formRef={parentRef}
+            buttonRef={buttonRef}
             onSubmit={addMember}
             iOneType="text"
-            iOnePLace="Member Name"
+            iOneName="membership"
+            iOnePlace="Member Name"
             iOne={newMember}
             setIOne={setNewMember}
             extraOne={setNewMemberId}
             isPending={isPending}
+            onClose={() => {
+              setCreate(false);
+              setNewMember("");
+              setNewMemberId("");
+            }}
           />
-          {newMember &&
-            !newMemberId &&
-            Boolean(allMembers?.length) &&
-            createPortal(
-              <div
-                ref={dropRef}
-                className="fixed z-10 p-1.5 bg-white flex flex-col gap-1.5 rounded-md border border-neutral-400 text-xs md:text-sm"
-                style={{
-                  top: pos.top,
-                  left: pos.left,
-                  width: pos.width,
-                }}
-              >
-                {allMembers?.map((member) => (
-                  <div
-                    onClick={() => {
-                      setNewMember(member.name);
-                      setNewMemberId(member.id);
-                    }}
-                    className="ps-2 py-0.5 pe-4 hover:cursor-pointer rounded-sm bg-neutral-500 text-white"
-                    key={member.id}
-                  >
-                    {member.name}
-                  </div>
-                ))}
-              </div>,
-              document.body
-            )}
+          {newMember && !newMemberId && Boolean(availableMembers?.length) && (
+            <DynamicDrop
+              parentRef={parentRef}
+              setInputValue={setNewMember}
+              setInsertValue={setNewMemberId}
+              results={availableMembers}
+            />
+          )}
         </div>
       }
     >
@@ -160,6 +99,7 @@ export const ProjectMembersPanel = () => {
           isActiveDrop={activeDrop}
           isSetActiveDrop={setActiveDrop}
           toDelete={deletemembership}
+          deletePending={deletePending}
         />
       ))}
     </PanelLayout>

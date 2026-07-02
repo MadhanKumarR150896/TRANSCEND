@@ -1,4 +1,4 @@
-import { useState, type SyntheticEvent } from "react";
+import { useRef, useState, type SyntheticEvent } from "react";
 import { PanelLayout } from "../components/PanelLayout";
 import { useQuery } from "@tanstack/react-query";
 import { useCreateMember, useGetMembers } from "../services/memberService";
@@ -10,8 +10,10 @@ export const MemberPanel = () => {
   const [create, setCreate] = useState(false);
   const { data: members, isLoading } = useQuery(useGetMembers());
   const { mutate, isPending } = useCreateMember();
+  const formRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const createMember = (e: SyntheticEvent<HTMLFormElement>) => {
+  const createMember = (e: SyntheticEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
     if (!memberName.trim() || !memberEmail) return;
 
@@ -23,6 +25,7 @@ export const MemberPanel = () => {
           setMemberEmail("");
         },
         onError: () => {
+          setMemberName("");
           setMemberEmail("");
         },
       }
@@ -34,22 +37,34 @@ export const MemberPanel = () => {
       title="Members"
       variant="Create Member"
       isCreate={create}
+      buttonRef={buttonRef}
       isSetCreate={setCreate}
       isIsLoading={isLoading}
       loadingMessage="Members are loading..."
       formElement={
-        <FormBox
-          onSubmit={createMember}
-          iOneType="text"
-          iOnePLace="Member Name"
-          iOne={memberName}
-          setIOne={setMemberName}
-          iTwoType="email"
-          iTwoPlace="Member Email"
-          iTwo={memberEmail}
-          setITwo={setMemberEmail}
-          isPending={isPending}
-        />
+        <div className="flex-1" ref={formRef}>
+          <FormBox
+            formRef={formRef}
+            buttonRef={buttonRef}
+            onSubmit={createMember}
+            iOneType="text"
+            iOneName="membername"
+            iOnePlace="Member Name"
+            iOne={memberName}
+            setIOne={setMemberName}
+            iTwoType="email"
+            iTwoName="memberemail"
+            iTwoPlace="Member Email"
+            iTwo={memberEmail}
+            setITwo={setMemberEmail}
+            isPending={isPending}
+            onClose={() => {
+              setCreate(false);
+              setMemberName("");
+              setMemberEmail("");
+            }}
+          />
+        </div>
       }
     >
       {members?.map((member) => (

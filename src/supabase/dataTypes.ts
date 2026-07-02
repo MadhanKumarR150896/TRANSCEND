@@ -7,9 +7,12 @@ export type ProjectMembers =
 export type Lists = dataTypes["public"]["Tables"]["lists"]["Row"];
 
 export type Project = Omit<Projects, "created_at" | "privacy">;
+export type ProjectP = Omit<Projects, "created_at">;
 
 export type Member = Pick<Members, "name" | "id">;
 export type NewMember = Pick<Members, "name" | "email">;
+
+export type MemberE = Pick<Members, "name" | "id" | "email">;
 
 export type ProjectMember = {
   membershipId: ProjectMembers["id"];
@@ -21,3 +24,4 @@ export type MembershipId = Pick<ProjectMembers, "id">;
 export type ProjectList = Pick<Lists, "name" | "id">;
 export type ListId = Pick<Lists, "id">;
 export type NewList = Pick<Lists, "name" | "id">;
+export type ProjectId = Pick<Projects, "id">;

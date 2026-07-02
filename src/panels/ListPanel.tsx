@@ -1,4 +1,4 @@
-import { useState, type SyntheticEvent } from "react";
+import { useRef, useState, type SyntheticEvent } from "react";
 import { PanelLayout } from "../components/PanelLayout";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
@@ -17,11 +17,15 @@ export const ListPanel = () => {
     useGetProjectLists(projectId)
   );
   const { mutate, isPending } = useCreateProjectList(projectId!);
-  const { mutate: deleteList } = useDeleteProjectList(projectId!);
+  const { mutate: deleteList, isPending: deletePending } = useDeleteProjectList(
+    projectId!
+  );
   const [create, setCreate] = useState(false);
   const [activeDrop, setActiveDrop] = useState<null | string>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const createList = (e: SyntheticEvent<HTMLFormElement>) => {
+  const createList = (e: SyntheticEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
     if (!listName.trim()) return;
 
@@ -40,19 +44,29 @@ export const ListPanel = () => {
       title="Lists"
       variant="Create List"
       isIsLoading={isLoading}
+      buttonRef={buttonRef}
       loadingMessage="Project Lists are loading..."
       isCreate={create}
       isSetCreate={setCreate}
       isSetActivedrop={setActiveDrop}
       formElement={
-        <FormBox
-          onSubmit={createList}
-          iOneType="text"
-          iOnePLace="List Name"
-          iOne={listName}
-          setIOne={setListName}
-          isPending={isPending}
-        />
+        <div className="flex-1" ref={formRef}>
+          <FormBox
+            formRef={formRef}
+            buttonRef={buttonRef}
+            onSubmit={createList}
+            iOneType="text"
+            iOneName="listname"
+            iOnePlace="List Name"
+            iOne={listName}
+            setIOne={setListName}
+            isPending={isPending}
+            onClose={() => {
+              setCreate(false);
+              setListName("");
+            }}
+          />
+        </div>
       }
     >
       {projectLists?.map((projectList) => (
@@ -63,6 +77,7 @@ export const ListPanel = () => {
           isActiveDrop={activeDrop}
           isSetActiveDrop={setActiveDrop}
           toDelete={deleteList}
+          deletePending={deletePending}
         />
       ))}
     </PanelLayout>

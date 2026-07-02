@@ -1,5 +1,5 @@
 import type {
-  Member,
+  MemberE,
   MembershipId,
   ProjectMember,
 } from "../supabase/dataTypes";
@@ -10,11 +10,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-const fetchAllMembers = async (value: string): Promise<Member[]> => {
-  const { data, error } = await supabase
-    .from("members")
-    .select("id,name")
-    .or(`name.ilike.%${value}%,email.ilike.%${value}%`);
+const fetchAvailableMembers = async (
+  value: string,
+  projectId: string
+): Promise<MemberE[]> => {
+  const { data, error } = await supabase.rpc("get_available_members", {
+    p_project_id: projectId,
+    p_search: value,
+  });
 
   if (error) throw error;
   if (!data) throw new Error("Unable to fetch members");
@@ -22,10 +25,14 @@ const fetchAllMembers = async (value: string): Promise<Member[]> => {
   return data;
 };
 
-export const useGetAllMembers = (value: string) => {
+export const useGetAvailableMembers = (
+  value: string,
+  projectId: string | undefined
+) => {
+  if (!projectId) throw new Error("Invalid Project Id");
   return queryOptions({
-    queryKey: ["All Members", value],
-    queryFn: () => fetchAllMembers(value),
+    queryKey: ["Available Members", value],
+    queryFn: () => fetchAvailableMembers(value, projectId),
     enabled: !!value,
   });
 };

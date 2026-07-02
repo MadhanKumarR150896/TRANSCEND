@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import type { ReactNode } from "react";
+import type { Dispatch, ReactNode, RefObject, SetStateAction } from "react";
 
 type PanelTitle = "Projects" | "Members" | "Project Members" | "Lists";
 type ButtonVariant =
@@ -12,8 +12,9 @@ type PanelLayoutProps = {
   title: PanelTitle;
   variant: ButtonVariant;
   isCreate: boolean;
-  isSetCreate: (status: boolean) => void;
-  isSetActivedrop?: (status: string | null) => void;
+  isSetCreate: Dispatch<SetStateAction<boolean>>;
+  isSetActivedrop?: Dispatch<SetStateAction<string | null>>;
+  buttonRef: RefObject<HTMLButtonElement | null>;
   isIsLoading?: boolean;
   loadingMessage?: string;
   children?: ReactNode;
@@ -24,6 +25,7 @@ export const PanelLayout = ({
   title,
   variant,
   isCreate,
+  buttonRef,
   isSetCreate,
   isSetActivedrop,
   isIsLoading,
@@ -36,6 +38,7 @@ export const PanelLayout = ({
       <div className="flex justify-between items-center font-semibold">
         <div className="bg-neutral-200 rounded py-1 px-4">{title}</div>
         <button
+          ref={buttonRef}
           className="bg-neutral-900 text-white py-1 px-4 rounded hover:cursor-pointer"
           onClick={() => isSetCreate(true)}
         >
@@ -51,12 +54,11 @@ export const PanelLayout = ({
         </div>
       </div>
       {isCreate && (
-        <div className="border p-2 rounded border-neutral-300 z-10 flex items-center justify-between">
+        <div className="relative border p-2 rounded border-neutral-300 z-10 flex items-center justify-between">
           {formElement}
           <button
-            className={`hover:cursor-pointer ${title === "Members" ? "mbe-auto" : ""}`}
+            className={`hover:cursor-pointer ${title === "Members" ? "absolute top-2 right-2" : ""}`}
             type="button"
-            onClick={() => isSetCreate(false)}
           >
             <X strokeWidth={1} size={25} />
           </button>
