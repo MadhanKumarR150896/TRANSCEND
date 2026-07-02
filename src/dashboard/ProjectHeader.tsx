@@ -25,7 +25,7 @@ export const ProjectHeader = () => {
   const [projectPrivacy, setProjectPrivacy] = useState<Privacy>("Public");
   const formRef = useRef<HTMLDivElement>(null);
 
-  const updateProject = (e: SyntheticEvent<HTMLFormElement>) => {
+  const updateProject = (e: SyntheticEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
     if (projectName === project?.name && projectPrivacy === project?.privacy)
       return;
@@ -69,7 +69,7 @@ export const ProjectHeader = () => {
 
   if (!project) return null;
   return (
-    <div className="relative">
+    <div className="relative place-self-center">
       <DisplayDiv
         display="Project"
         id={project.id}
@@ -84,7 +84,7 @@ export const ProjectHeader = () => {
       {isOpen && (
         <div
           ref={formRef}
-          className="absolute top-full right-0 mt-1 border p-2 rounded border-neutral-300 z-10 flex gap-2 items-center justify-between"
+          className="absolute bg-white top-full right-0 mt-1 border p-2 rounded border-neutral-300 z-10 flex gap-2 items-center justify-between"
         >
           <FormBox
             formRef={formRef}

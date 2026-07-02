@@ -89,7 +89,7 @@ export const StaticDrop = ({
       style={{ top: dropPos.top, left: dropPos.left }}
       className="fixed bg-neutral-200 py-1 px-2 rounded border border-neutral-400 text-xs md:text-sm flex flex-col gap-1"
     >
-      {display === "Project" && (
+      {(display === "Project" || display === "List") && (
         <button
           onClick={() => {
             toUpdate?.(true);

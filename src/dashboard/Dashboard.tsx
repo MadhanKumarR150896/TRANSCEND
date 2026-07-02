@@ -10,7 +10,7 @@ export const Dashboard = () => {
       <div className="w-full flex-2 md:flex-1 lg:flex-none lg:w-[clamp(400px,30vw,450px)] flex flex-col md:flex-row lg:flex-col gap-2 min-h-0">
         <SidePanel />
       </div>
-      <div className="flex-1 border rounded bg-white border-neutral-300">
+      <div className="flex-1 border rounded bg-white border-neutral-300 p-4 flex flex-col gap-4">
         {projectId ? (
           <ProjectContainer />
         ) : (

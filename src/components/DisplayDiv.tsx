@@ -2,7 +2,7 @@ import { EllipsisVertical, Globe, GlobeLock } from "lucide-react";
 import { useRef, type Dispatch, type SetStateAction } from "react";
 import { StaticDrop } from "./StaticDrop";
 
-export type Display = "Project" | "Small";
+export type Display = "Project" | "List";
 export type Privacy = "Public" | "Private";
 
 type DisplayDivProps = {

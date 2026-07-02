@@ -6,10 +6,12 @@ type ButtonVariant =
   | "Create Project"
   | "Create Member"
   | "Add Member"
-  | "Create List";
+  | "Create List"
+  | "Create Tasks";
 
 type PanelLayoutProps = {
-  title: PanelTitle;
+  title?: PanelTitle;
+  listName?: string;
   variant: ButtonVariant;
   isCreate: boolean;
   isSetCreate: Dispatch<SetStateAction<boolean>>;
@@ -19,10 +21,12 @@ type PanelLayoutProps = {
   loadingMessage?: string;
   children?: ReactNode;
   formElement?: ReactNode;
+  displayElement?: ReactNode;
 };
 
 export const PanelLayout = ({
   title,
+  listName,
   variant,
   isCreate,
   buttonRef,
@@ -32,11 +36,19 @@ export const PanelLayout = ({
   loadingMessage,
   children,
   formElement,
+  displayElement,
 }: PanelLayoutProps) => {
   return (
-    <div className="flex-1 border rounded bg-white border-neutral-300 p-2 flex flex-col gap-2 min-h-0">
-      <div className="flex justify-between items-center font-semibold">
-        <div className="bg-neutral-200 rounded py-1 px-4">{title}</div>
+    <div
+      className={`flex-1 border rounded bg-white border-neutral-300 p-2 flex flex-col gap-2 ${listName ? "min-h-100 max-h-125 min-w-80 max-w-100 shadow-md shadow-black" : ""}`}
+    >
+      <div
+        className={`flex ${listName ? "flex-row-reverse" : ""} justify-between items-center font-semibold`}
+      >
+        {title && (
+          <div className="bg-neutral-200 rounded py-1 px-4">{title}</div>
+        )}
+        {listName && displayElement}
         <button
           ref={buttonRef}
           className="bg-neutral-900 text-white py-1 px-4 rounded hover:cursor-pointer"
@@ -57,7 +69,7 @@ export const PanelLayout = ({
         <div className="relative border p-2 rounded border-neutral-300 z-10 flex items-center justify-between">
           {formElement}
           <button
-            className={`hover:cursor-pointer ${title === "Members" ? "absolute top-2 right-2" : ""}`}
+            className={`hover:cursor-pointer ${title === "Members" || listName ? "absolute top-2 right-2" : ""}`}
             type="button"
           >
             <X strokeWidth={1} size={25} />

@@ -1,4 +1,9 @@
-import type { ListId, NewList, ProjectList } from "../supabase/dataTypes";
+import type {
+  ListId,
+  NewList,
+  Project,
+  ProjectList,
+} from "../supabase/dataTypes";
 import { supabase } from "../supabase/supabaseClient";
 import {
   queryOptions,
@@ -73,7 +78,7 @@ const deleteProjectList = async (listId: string): Promise<ListId> => {
     .single();
 
   if (error) throw error;
-  if (!data) throw new Error("Unable to fetch Project Members");
+  if (!data) throw new Error("Unable to delete List");
 
   return data;
 };
@@ -86,6 +91,41 @@ export const useDeleteProjectList = (projectId: string) => {
       queryClient.setQueryData<ProjectList[]>(
         ["Project Lists", projectId],
         (oldLists) => oldLists?.filter((list) => list.id !== deletedList.id)
+      );
+    },
+  });
+};
+
+type ListU = {
+  listName: string;
+  listId: string;
+};
+
+const updateList = async ({ listName, listId }: ListU) => {
+  const { data, error } = await supabase
+    .from("lists")
+    .update({ name: listName })
+    .eq("id", listId)
+    .select("id,name")
+    .single();
+
+  if (error) throw error;
+  if (!data) throw new Error("Unable to update Project");
+
+  return data;
+};
+
+export const useUpdateProjectList = (listId: string, projectId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (listName: string) => updateList({ listName, listId }),
+    onSuccess: (updatedList) => {
+      queryClient.setQueryData<Project[]>(
+        ["Project Lists", projectId],
+        (oldLists) =>
+          oldLists?.map((list) =>
+            list.id === updatedList.id ? updatedList : list
+          )
       );
     },
   });

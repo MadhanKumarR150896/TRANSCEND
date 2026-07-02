@@ -92,8 +92,8 @@ export const FormBox = ({
       <div className="flex gap-2">
         {iTwoType && (
           <fieldset name={iTwoName} className="flex items-center gap-2">
-            <label htmlFor={iTwoName} className="pe-1">
-              Email
+            <label htmlFor={iTwoName} className="pe-1.5">
+              {iTwoType === "email" ? "Email" : "Desc"}
             </label>
             <input
               id={iTwoName}
