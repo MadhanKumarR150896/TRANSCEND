@@ -4,10 +4,12 @@ A project management dashboard to create, manage, and track tasks.
 
 **Live Demo:** [https://transcend-five-teal.vercel.app/]
 
+https://github.com/user-attachments/assets/041dc1f2-216e-4c9f-9359-211ffef8f125
+
 ## Tech Stack
 
 - **Front-end:** React, TypeScript, Tailwind CSS, TanStack Query
-- **Backend-as-a-Service:** Supabase
+- **Backend-as-a-Service:** Supabase (Sample Schema added in the repo)
 
 ## Features
 
