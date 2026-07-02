@@ -40,7 +40,7 @@ export const PanelLayout = ({
 }: PanelLayoutProps) => {
   return (
     <div
-      className={`flex-1 border rounded bg-white border-neutral-300 p-2 flex flex-col gap-2 ${listName ? "min-h-100 max-h-125 min-w-80 max-w-100 shadow-md shadow-black" : ""}`}
+      className={`flex-1 border rounded bg-white border-neutral-400 p-2 flex flex-col gap-2 ${listName ? "h-110 min-w-90 max-w-100 shadow-md shadow-black" : "min-h-60 md:min-h-80 lg:min-h-60"}`}
     >
       <div
         className={`flex ${listName ? "flex-row-reverse" : ""} justify-between items-center font-semibold`}
@@ -58,7 +58,7 @@ export const PanelLayout = ({
         </button>
       </div>
       <div
-        className="flex-1 min-h-0 overflow-y-auto scrollbar-none"
+        className="flex-1 min-h-0 overflow-y-auto scrollbar-none border-t border-t-neutral-400"
         onScroll={() => isSetActivedrop?.(null)}
       >
         <div className="flex flex-wrap whitespace-nowrap py-4 px-1 gap-2">

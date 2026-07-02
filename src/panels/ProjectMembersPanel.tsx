@@ -31,6 +31,7 @@ export const ProjectMembersPanel = () => {
   const [activeDrop, setActiveDrop] = useState<null | string>(null);
   const parentRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
 
   const clearState = () => {
     setNewMember("");
@@ -66,6 +67,7 @@ export const ProjectMembersPanel = () => {
           <FormBox
             formRef={parentRef}
             buttonRef={buttonRef}
+            dropRef={dropRef}
             onSubmit={addMember}
             iOneType="text"
             iOneName="membership"
@@ -83,6 +85,7 @@ export const ProjectMembersPanel = () => {
           {newMember && !newMemberId && Boolean(availableMembers?.length) && (
             <DynamicDrop
               parentRef={parentRef}
+              dropRef={dropRef}
               setInputValue={setNewMember}
               setInsertValue={setNewMemberId}
               results={availableMembers}

@@ -2,7 +2,6 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useRef,
   useState,
   type Dispatch,
   type RefObject,
@@ -13,6 +12,7 @@ import type { MemberE } from "../supabase/dataTypes";
 
 type InputDropProps = {
   parentRef: RefObject<HTMLDivElement | null>;
+  dropRef?: RefObject<HTMLDivElement | null>;
   setInputValue: Dispatch<SetStateAction<string>>;
   setInsertValue: Dispatch<SetStateAction<string>>;
   results: MemberE[] | undefined;
@@ -23,9 +23,9 @@ export const DynamicDrop = ({
   setInputValue,
   setInsertValue,
   results,
+  dropRef,
 }: InputDropProps) => {
   const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
-  const dropRef = useRef<HTMLDivElement>(null);
 
   const updatePosition = useCallback(() => {
     if (!parentRef.current) return;
@@ -52,12 +52,12 @@ export const DynamicDrop = ({
 
     return () => {
       window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
     };
   }, [results, updatePosition]);
 
   useEffect(() => {
-    if (!results) return;
+    if (!results || !dropRef?.current) return;
     const handleDrop = (e: MouseEvent) => {
       if (
         dropRef.current?.contains(e.target as Node) ||
@@ -71,14 +71,14 @@ export const DynamicDrop = ({
     document.addEventListener("mousedown", handleDrop);
 
     return () => document.removeEventListener("mousedown", handleDrop);
-  }, [results, parentRef, setInsertValue]);
+  }, [results, parentRef, setInsertValue, dropRef]);
 
   if (!results) return null;
 
   return createPortal(
     <div
       ref={dropRef}
-      className="fixed z-10 p-1.5 bg-white flex flex-col gap-1.5 rounded-md border border-neutral-400 text-xs md:text-sm"
+      className="fixed z-10 p-1.5 bg-white flex flex-col gap-1.5 rounded-md border overflow-y-auto border-neutral-400 text-xs md:text-sm"
       style={{
         top: pos.top,
         left: pos.left,

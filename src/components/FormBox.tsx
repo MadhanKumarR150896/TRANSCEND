@@ -1,6 +1,7 @@
 import {
   useEffect,
   type Dispatch,
+  type ReactNode,
   type RefObject,
   type SetStateAction,
   type SyntheticEvent,
@@ -10,8 +11,10 @@ type InputType = "text" | "email";
 type Privacy = "Public" | "Private";
 
 type FormBoxProps = {
+  children?: ReactNode;
   formRef: RefObject<HTMLDivElement | null>;
   buttonRef?: RefObject<HTMLButtonElement | null>;
+  dropRef?: RefObject<HTMLDivElement | null>;
   onSubmit: (e: SyntheticEvent<HTMLFormElement, Event>) => void;
   iOneType: InputType;
   iOneName: string;
@@ -51,13 +54,16 @@ export const FormBox = ({
   sValue,
   setSValue,
   onClose,
+  dropRef,
+  children,
 }: FormBoxProps) => {
   useEffect(() => {
     if (!formRef.current) return;
     const handleForm = (e: MouseEvent) => {
       if (
         formRef.current?.contains(e.target as Node) ||
-        buttonRef?.current?.contains(e.target as Node)
+        buttonRef?.current?.contains(e.target as Node) ||
+        dropRef?.current?.contains(e.target as Node)
       )
         return;
       onClose();
@@ -66,7 +72,7 @@ export const FormBox = ({
     document.addEventListener("mousedown", handleForm);
 
     return () => document.removeEventListener("mousedown", handleForm);
-  }, [formRef, onClose, buttonRef]);
+  }, [formRef, onClose, buttonRef, dropRef]);
 
   return (
     <form
@@ -89,6 +95,7 @@ export const FormBox = ({
           }}
         />
       </fieldset>
+      {children ? children : ""}
       <div className="flex gap-2">
         {iTwoType && (
           <fieldset name={iTwoName} className="flex items-center gap-2">
@@ -121,6 +128,7 @@ export const FormBox = ({
             </select>
           </div>
         )}
+
         <button
           className="bg-neutral-200 py-1 px-2 rounded hover:cursor-pointer"
           type="submit"

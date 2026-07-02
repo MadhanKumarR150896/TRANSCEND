@@ -135,3 +135,34 @@ export const useDeleteProjectMember = (projectId: string) => {
     },
   });
 };
+
+type ProjectM = {
+  id: string;
+  name: string;
+};
+
+const projectMembers = async (projectId: string): Promise<ProjectM[]> => {
+  const { data, error } = await supabase
+    .from("project_members")
+    .select(`members(id,name)`)
+    .eq("project_id", projectId);
+
+  if (error) throw error;
+  if (!data) throw new Error("Unable to fetch Project Mems");
+
+  const typedData = data.map((projectMem) => ({
+    id: projectMem.members.id,
+    name: projectMem.members.name,
+  }));
+
+  return typedData;
+};
+
+export const useGetPMembers = (projectId: string | undefined) => {
+  if (!projectId) throw new Error("Invalid Project ID");
+  return queryOptions({
+    queryKey: ["Project Mem", projectId],
+    queryFn: () => projectMembers(projectId),
+    enabled: !!projectId,
+  });
+};

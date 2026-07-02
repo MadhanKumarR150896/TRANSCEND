@@ -14,6 +14,7 @@ import {
   useDeleteProjectList,
   useUpdateProjectList,
 } from "../services/projectListsService";
+import { TaskBox } from "./TaskBox";
 
 export const TaskPanel = ({ list }: { list: ProjectList }) => {
   const { projectId } = useParams();
@@ -34,7 +35,6 @@ export const TaskPanel = ({ list }: { list: ProjectList }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [taskName, setTaskName] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
-  const [assignedTo, setAssignedTo] = useState<string | null>(null);
 
   const updateList = (e: SyntheticEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
@@ -51,26 +51,24 @@ export const TaskPanel = ({ list }: { list: ProjectList }) => {
 
   const createTask = (e: SyntheticEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
-    if (!taskName.trim() || !taskDesc.trim()) return;
+    if (!taskName.trim()) return;
 
     mutate(
-      { taskName, taskDesc, assignedTo },
+      { taskName, taskDesc },
       {
         onSuccess: () => {
           setTaskName("");
           setTaskDesc("");
-          setAssignedTo(null);
         },
         onError: () => {
           setTaskName("");
           setTaskDesc("");
-          setAssignedTo(null);
         },
       }
     );
   };
 
-  const onClose = () => {
+  const onClosed = () => {
     if (list) {
       setOpen(false);
       setListName(list.name);
@@ -145,11 +143,11 @@ export const TaskPanel = ({ list }: { list: ProjectList }) => {
                 iOnePlace="Change List Name"
                 iOne={listName}
                 setIOne={setListName}
-                onClose={onClose}
+                onClose={onClosed}
                 isPending={updatePending}
               />
               <button
-                onClick={onClose}
+                onClick={onClosed}
                 className="hover:cursor-pointer mbe-auto"
                 type="button"
               >
@@ -161,7 +159,7 @@ export const TaskPanel = ({ list }: { list: ProjectList }) => {
       }
     >
       {tasks?.map((task) => (
-        <div key={task.id}>{task.name}</div>
+        <TaskBox key={task.id} task={task} />
       ))}
     </PanelLayout>
   );

@@ -84,7 +84,7 @@ export const ProjectHeader = () => {
       {isOpen && (
         <div
           ref={formRef}
-          className="absolute bg-white top-full right-0 mt-1 border p-2 rounded border-neutral-300 z-10 flex gap-2 items-center justify-between"
+          className="absolute bg-white top-full right-0 mt-1 border p-2 rounded border-neutral-400 z-10 flex gap-2 items-center justify-between"
         >
           <FormBox
             formRef={formRef}

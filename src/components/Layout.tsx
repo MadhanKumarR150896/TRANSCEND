@@ -7,7 +7,7 @@ export const Layout = () => {
       <Header />
       <main
         style={{ scrollbarWidth: "none" }}
-        className="flex-1 w-full min-h-0 overflow-y-auto flex flex-col"
+        className="flex-1 w-full overflow-none md:overflow-y-auto flex flex-col"
       >
         <Outlet />
       </main>

@@ -27,4 +27,11 @@ export type ListId = Pick<Lists, "id">;
 export type NewList = Pick<Lists, "name" | "id">;
 export type ProjectId = Pick<Projects, "id">;
 
-export type Task = Omit<Tasks, "created_at" | "list_id">;
+export type Task = {
+  id: string;
+  name: string;
+  list_id: string;
+  description: string | null;
+  assigned_to: string | null;
+  assignedName: string | null;
+};
